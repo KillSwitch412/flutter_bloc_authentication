@@ -15,5 +15,5 @@ class AuthenticationAPI {
     return await Dio().post('$baseUrl/signin', data: signinData);
   }
 
-  // Future<bool> authen
+  // Future<bool> isTokenValid
 }

@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meta/meta.dart';
 
 import '../../data/repositories/user_repository.dart';
 
@@ -17,6 +16,7 @@ class AuthenticationBloc
   // @override
   AuthenticationState get initialState => AuthenticationUnauthenticated();
 
+  // @override
   Stream<AuthenticationState> mapEventToState(currentState, event) async* {
     // at app startup
     if (event is AppStarted) {
