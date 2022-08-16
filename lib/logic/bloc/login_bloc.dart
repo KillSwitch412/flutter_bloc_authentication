@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:logger/logger.dart';
 
 import '../../data/repositories/user_repository.dart';
 import 'authentication_bloc.dart';
@@ -14,9 +15,47 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc({
     required this.userRepository,
     required this.authenticationBloc,
-  }) : super(LoginInitial());
+  }) : super(LoginInitial()) {
+    on<LoginButtonPressed>(_onLoginButtonPressed);
+    on<RegisterButtonPressed>(_onRegisterButtonPressed);
+  }
 
-  // @override
+  Future<void> _onLoginButtonPressed(
+    LoginButtonPressed event,
+    Emitter<LoginState> emit,
+  ) async {
+    emit(LoginLoading());
+
+    try {
+      // ! logger
+      Logger().d('Sending POST with ---> ${event.loginData}');
+
+      final response = await userRepository.authenticate(
+        loginData: event.loginData,
+      );
+
+      // ! logger
+      Logger().d('responce ---> ${response.data}');
+      Logger().d("responce ---> ${response.data['token']}");
+
+      // * dispatch event
+      authenticationBloc.add(
+        LoggedIn(token: response.data['token']),
+      );
+
+      emit(LoginInitial());
+    } catch (error) {
+      emit(
+        LoginFailure(error: error.toString()),
+      );
+    }
+  }
+
+  Future<void> _onRegisterButtonPressed(
+    RegisterButtonPressed event,
+    Emitter<LoginState> emit,
+  ) async {}
+
   LoginState get initialState => LoginInitial();
 
   // @override
@@ -27,7 +66,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       try {
         final response = await userRepository.authenticate(
-          signinData: event.loginData,
+          loginData: event.loginData,
         );
 
         // dispatch event
@@ -40,8 +79,5 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoginFailure(error: error.toString());
       }
     }
-
-    // for registering
-    if (event is RegisterButtonPressed) {}
   }
 }

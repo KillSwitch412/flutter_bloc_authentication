@@ -25,9 +25,9 @@ class UserRepository {
 
   // on logging in
   Future<dynamic> authenticate({
-    required Map<dynamic, dynamic> signinData,
+    required Map<dynamic, dynamic> loginData,
   }) async {
-    return await authenticationAPI.sigin(signinData: signinData);
+    return await authenticationAPI.login(loginData: loginData);
   }
 
   // Future<bool> isTokenValid
@@ -38,7 +38,7 @@ class UserRepository {
 
   Future<void> persistData(token) async {
     // storing token to secure_storage
-    await _secureStorage.write(key: 'KEY_TOKEN', value: token);
+    await _secureStorage.write(key: 'JWT_TOKEN', value: token);
 
     // storing data to shared storage
     _sharedStorage.setString('FIRSTNAME', 'value');

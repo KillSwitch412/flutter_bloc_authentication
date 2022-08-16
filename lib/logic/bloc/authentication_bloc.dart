@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 
 import '../../data/repositories/user_repository.dart';
 
@@ -35,6 +36,9 @@ class AuthenticationBloc
     Emitter<AuthenticationState> emit,
   ) async {
     emit(AuthenticationLoading());
+    Logger().d(
+      'LoggedIn Triggerred, Token Before Persisting ---> ${event.token}',
+    );
     await userRepository.persistData(event.token);
     emit(AuthenticationAuthenticated());
   }

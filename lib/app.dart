@@ -7,6 +7,7 @@ import 'data/repositories/user_repository.dart';
 import 'logic/bloc/authentication_bloc.dart';
 import 'presentation/screens/auth_screen.dart';
 import 'presentation/screens/home_screen.dart';
+import 'presentation/screens/loading_screen.dart';
 
 class App extends StatefulWidget {
   const App({
@@ -53,7 +54,8 @@ class _AppState extends State<App> {
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           bloc: authenticationBloc,
           builder: (context, state) {
-            Logger().d('state: $state');
+            // ! logger
+            Logger().d('auth state: $state');
 
             // * so that as long as the state is 'AuthenticationUninitialized'
             // * the splashScreen will remain visible
@@ -62,7 +64,7 @@ class _AppState extends State<App> {
             }
 
             if (state is AuthenticationUnauthenticated) {
-              return const AuthScreen();
+              return AuthScreen(userRepository: userRepository);
             }
 
             if (state is AuthenticationAuthenticated) {
@@ -70,7 +72,7 @@ class _AppState extends State<App> {
             }
 
             if (state is AuthenticationLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const LoadingScreen();
             }
 
             return const Center(child: Text('AuthticationState Error'));
