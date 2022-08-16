@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AuthMode { register, signin }
+enum AuthMode { register, login }
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -11,11 +11,11 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  AuthMode authMode = AuthMode.signin;
+  AuthMode authMode = AuthMode.login;
 
-  // register and signin data is stored in these objects
+  // * register and login data is stored in these objects
   final registerData = {};
-  final signinData = {};
+  final loginData = {};
 
   @override
   void dispose() {
@@ -24,14 +24,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> register() async {
     _formKey.currentState!.save();
-    print('----------> Register <----------');
-    print(registerData);
+    // print('----------> Register <----------');
+    // print(registerData);
   }
 
-  Future<void> signin() async {
+  Future<void> login() async {
     _formKey.currentState!.save();
-    print('----------> Sign in <----------');
-    print(signinData);
+    // print('----------> Log in <----------');
+    // print(loginData);
   }
 
   @override
@@ -41,7 +41,7 @@ class _AuthScreenState extends State<AuthScreen> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Register / Signin'),
+            title: const Text('Register / Login'),
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -51,7 +51,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    authMode == AuthMode.register ? 'Register' : 'Sign In',
+                    authMode == AuthMode.register ? 'Register' : 'Log In',
                     style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
@@ -60,7 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   TextFormField(
                     onSaved: (value) {
                       registerData['email'] = value!;
-                      signinData['email'] = value;
+                      loginData['email'] = value;
                     },
                     keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
@@ -70,7 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   TextFormField(
                     onSaved: (value) {
                       registerData['password'] = value!;
-                      signinData['password'] = value;
+                      loginData['password'] = value;
                     },
                     decoration: const InputDecoration(
                       label: Text('Password'),
@@ -136,18 +136,18 @@ class _AuthScreenState extends State<AuthScreen> {
                       if (authMode == AuthMode.register) {
                         register();
                       } else {
-                        signin();
+                        login();
                       }
                     },
                     child: Text(
-                      authMode == AuthMode.register ? 'Register' : 'Sign In',
+                      authMode == AuthMode.register ? 'Register' : 'Log In',
                     ),
                   ),
                   TextButton(
                     onPressed: () {
                       if (authMode == AuthMode.register) {
                         setState(() {
-                          authMode = AuthMode.signin;
+                          authMode = AuthMode.login;
                         });
                       } else {
                         setState(() {

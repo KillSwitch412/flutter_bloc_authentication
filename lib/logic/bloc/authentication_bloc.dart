@@ -11,36 +11,42 @@ class AuthenticationBloc
   final UserRepository userRepository;
 
   AuthenticationBloc({required this.userRepository})
-      : super(AuthenticationUnauthenticated());
+      : super(AuthenticationUninitialized()) {
+    on<AppStarted>(_onAppStarted);
+    on<LoggedIn>(_onLoggedIn);
+    on<LoggedOut>(_onLoggedOut);
+  }
 
-  // @override
-  AuthenticationState get initialState => AuthenticationUnauthenticated();
+  Future<void> _onAppStarted(
+    AppStarted event,
+    Emitter<AuthenticationState> emit,
+  ) async {
+    final bool hasToken = await userRepository.hasToken();
 
-  // @override
-  Stream<AuthenticationState> mapEventToState(currentState, event) async* {
-    // at app startup
-    if (event is AppStarted) {
-      final bool hasToken = await userRepository.hasToken();
-
-      if (hasToken) {
-        yield AuthenticationAuthenticated();
-      } else {
-        yield AuthenticationUnauthenticated();
-      }
-    }
-
-    // at signin or register
-    if (event is LoggedIn) {
-      yield AuthenticationLoading();
-      await userRepository.persistData(event.token);
-      yield AuthenticationAuthenticated();
-    }
-
-    // at logout
-    if (event is LoggedOut) {
-      yield AuthenticationLoading();
-      await userRepository.deleteData();
-      yield AuthenticationUnauthenticated();
+    if (hasToken) {
+      emit(AuthenticationAuthenticated());
+    } else {
+      emit(AuthenticationUnauthenticated());
     }
   }
+
+  Future<void> _onLoggedIn(
+    LoggedIn event,
+    Emitter<AuthenticationState> emit,
+  ) async {
+    emit(AuthenticationLoading());
+    await userRepository.persistData(event.token);
+    emit(AuthenticationAuthenticated());
+  }
+
+  Future<void> _onLoggedOut(
+    LoggedOut event,
+    Emitter<AuthenticationState> emit,
+  ) async {
+    emit(AuthenticationLoading());
+    await userRepository.deleteData();
+    emit(AuthenticationUnauthenticated());
+  }
+
+  AuthenticationState get initialState => AuthenticationUninitialized();
 }
