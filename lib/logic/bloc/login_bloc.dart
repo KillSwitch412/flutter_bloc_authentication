@@ -30,9 +30,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           signinData: event.loginData,
         );
 
-        // authenticationBloc
-      } catch (err) {
-        yield LoginFailure(error: err.toString());
+        // dispatch event
+        authenticationBloc.add(
+          LoggedIn(token: response['token']),
+        );
+
+        yield LoginInitial();
+      } catch (error) {
+        yield LoginFailure(error: error.toString());
       }
     }
 
