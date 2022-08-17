@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data_providers/auth_api.dart';
@@ -45,8 +46,29 @@ class UserRepository {
     _sharedStorage.setString('LASTNAME', 'value');
   }
 
-  Future<bool> hasToken() async {
+  // * needed for app starts
+  Future<bool> hasValidToken() async {
+    // 1) get token from local storage
     final String token = await _secureStorage.read(key: 'JWT_TOKEN') ?? '';
-    return token == '' ? false : true;
+    if (token == '') return false;
+
+    // 2) validate token from server
+    try {
+      // request
+      final validationResponce = await authenticationAPI.isTokenValid(
+        token: token,
+      );
+
+      // check response
+      if (validationResponce.data['status'] == 'success') {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      // incase of error
+      Logger().d("Error in 'UserRepositoty.hasValidToken()': $err");
+      return false;
+    }
   }
 }

@@ -15,5 +15,10 @@ class AuthenticationAPI {
     return await Dio().post('$baseUrl/signin', data: loginData);
   }
 
-  // Future<bool> isTokenValid
+  Future<dynamic> isTokenValid({required String token}) async {
+    return await Dio().post(
+      '$baseUrl/validateLogin',
+      options: Options(headers: {"authorization": token}),
+    );
+  }
 }

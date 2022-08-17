@@ -22,9 +22,9 @@ class AuthenticationBloc
     AppStarted event,
     Emitter<AuthenticationState> emit,
   ) async {
-    final bool hasToken = await userRepository.hasToken();
+    final bool hasValidToken = await userRepository.hasValidToken();
 
-    if (hasToken) {
+    if (hasValidToken) {
       emit(AuthenticationAuthenticated());
     } else {
       emit(AuthenticationUnauthenticated());
