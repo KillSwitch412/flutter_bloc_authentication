@@ -57,15 +57,23 @@ class _AuthScreenState extends State<AuthScreen> {
 
   // * functions
   Future<void> register() async {
+    // * closing keyboard
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    // * saving form data
     _formKey.currentState!.save();
-    // print('----------> Register <----------');
-    // print(registerData);
+
+    // ! logger
+    Logger().d('Registeration initiated with data ---> $registerData');
+
+    _loginBloc.add(RegisterButtonPressed(registerData: registerData));
   }
 
   Future<void> login() async {
     // * closing keyboard
     FocusManager.instance.primaryFocus?.unfocus();
 
+    // * saving form data
     _formKey.currentState!.save();
 
     // ! logger

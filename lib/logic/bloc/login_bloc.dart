@@ -28,7 +28,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     try {
       // ! logger
-      Logger().d('Sending POST with ---> ${event.loginData}');
+      Logger().d('Sending Login POST with ---> ${event.loginData}');
 
       final response = await userRepository.authenticate(
         loginData: event.loginData,
@@ -45,39 +45,38 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       emit(LoginInitial());
     } catch (error) {
-      emit(
-        LoginFailure(error: error.toString()),
-      );
+      emit(LoginFailure(error: error.toString()));
     }
   }
 
   Future<void> _onRegisterButtonPressed(
     RegisterButtonPressed event,
     Emitter<LoginState> emit,
-  ) async {}
+  ) async {
+    emit(LoginLoading());
 
-  LoginState get initialState => LoginInitial();
+    try {
+      // ! logger
+      Logger().d('Sending Login POST with ---> ${event.registerData}');
 
-  // @override
-  Stream<LoginState> mapEventToState(currentState, event) async* {
-    // for logging in
-    if (event is LoginButtonPressed) {
-      yield LoginLoading();
+      final response = await userRepository.registerAndAuthenticate(
+        registerData: event.registerData,
+      );
 
-      try {
-        final response = await userRepository.authenticate(
-          loginData: event.loginData,
-        );
+      // ! logger
+      Logger().d('responce ---> ${response.data}');
+      Logger().d("responce ---> ${response.data['token']}");
 
-        // dispatch event
-        authenticationBloc.add(
-          LoggedIn(token: response['token']),
-        );
+      // * dispatch event
+      authenticationBloc.add(
+        LoggedIn(token: response.data['token']),
+      );
 
-        yield LoginInitial();
-      } catch (error) {
-        yield LoginFailure(error: error.toString());
-      }
+      emit(LoginInitial());
+    } catch (error) {
+      emit(LoginFailure(error: error.toString()));
     }
   }
+
+  LoginState get initialState => LoginInitial();
 }
